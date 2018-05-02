@@ -8,9 +8,11 @@ import reactMixin from "react-mixin";
 export default class QuestionRotator extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
-    this.state.question = "Welcome";
-    //timer equals width of the bar
+    this.state = {
+      question: "Welcome",
+      timesUp: false
+    };
+    //width of bar indicates timer, starts with 0 width til 100%
     this.widthOfTimerBar = new Animated.Value(0);
   }
 
@@ -21,7 +23,11 @@ export default class QuestionRotator extends React.Component {
     Animated.timing(this.widthOfTimerBar, {
       toValue: 1,
       duration: 100 * 60 * 1
-    }).start();
+    }).start(this.announceTimesUp);
+  };
+
+  announceTimesUp = ({ finished }) => {
+    if (finished) this.setState({ timesUp: true });
   };
 
   getCurrentWidthOfTimerBar = () => ({
@@ -32,16 +38,24 @@ export default class QuestionRotator extends React.Component {
   });
 
   onPress = () => {
-    this.setState({ question: this.getRandomQuestion() });
+    this.setState({
+      timesUp: false,
+      question: this.getRandomQuestion()
+    });
     this.animateTimerBar();
   };
 
   render() {
     return (
       <View style={styles.main}>
-        <ScrollView contentContainerStyle={styles.container}>
+        <ScrollView
+          contentContainerStyle={[
+            styles.container,
+            this.state.timesUp && styles.timesUp
+          ]}
+        >
           <Text onPress={this.onPress} style={styles.question}>
-            {this.state.question}{" "}
+            {this.state.question}
           </Text>
         </ScrollView>
         <Animated.View
@@ -77,5 +91,8 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: "white",
     alignSelf: "flex-start"
+  },
+  timesUp: {
+    backgroundColor: "red"
   }
 });
