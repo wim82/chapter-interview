@@ -2,6 +2,7 @@ import React from "react";
 import { Text, View, Button, YellowBox, StyleSheet } from "react-native";
 import QuestionRotator from "./QuestionRotator";
 import { StackNavigator } from "react-navigation";
+import CandidatePage from "./CandidatePage";
 
 YellowBox.ignoreWarnings(["Warning: isMounted(...) is deprecated"]);
 
@@ -41,7 +42,7 @@ const styles = StyleSheet.create({
 export default StackNavigator(
   {
     Home: { screen: App },
-    Profile: { screen: App }
+    Profile: { screen: CandidatePage }
   },
   {
     initialRouteName: "Home"
