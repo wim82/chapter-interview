@@ -18,18 +18,19 @@ export default class CandidatePage extends React.Component {
       name: "",
       date: new Date(),
       isDatePickerOpen: false,
-      position: ""
+      position: "Front End DevEngineer",
+      notes: ""
     };
   }
 
-  setDate = newDate => {
-    console.log("setting new date", newDate);
-    this.setState({ date: newDate });
-  };
+  static navigationOptions = ({ navigation }) => ({
+    title: "Details"
+  });
+
+  setDate = newDate => this.setState({ date: newDate });
 
   toggleDatePicker = previousState => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
-    console.log("togglin", this.state.isDatePickerOpen);
     this.setState({ isDatePickerOpen: !this.state.isDatePickerOpen });
   };
 
@@ -77,6 +78,16 @@ export default class CandidatePage extends React.Component {
             value={this.state.position}
             style={styles.nameInputField}
           />
+          <View>
+            <Text style={styles.question}>position</Text>
+          </View>
+          <TextInput
+            placeholder="notes"
+            multiline
+            onChangeText={notes => this.setState({ notes })}
+            value={this.state.notes}
+            style={[styles.nameInputField, styles.notesInputField]}
+          />
         </ScrollView>
       </View>
     );
@@ -111,6 +122,10 @@ const styles = StyleSheet.create({
     height: 40,
     fontSize: 24,
     color: "#424242"
+  },
+  notesInputField: {
+    height: 240,
+    fontSize: 16
   },
   dateInputField: {
     paddingBottom: 8,

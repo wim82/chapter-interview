@@ -14,21 +14,31 @@ export default class QuestionRotator extends React.Component {
     };
     //width of bar indicates timer, starts with 0 width til 100%
     this.widthOfTimerBar = new Animated.Value(0);
+    this.backgroundColor = new Animated.Value(0);
   }
 
   getRandomQuestion = () => sample(questions);
 
   animateTimerBar = () => {
-    this.widthOfTimerBar = new Animated.Value(0);
-    Animated.timing(this.widthOfTimerBar, {
+    this.backgroundColor = new Animated.Value(0);
+    Animated.timing(this.backgroundColor, {
       toValue: 1,
       duration: 100 * 60 * 1
-    }).start(this.announceTimesUp);
+    }).start();
+
+    this.widthOfTimerBar = new Animated.Value(0);
+    Animated.timing(this.widthOfTimerBar, {
+      toValue: 100,
+      duration: 100 * 60 * 1
+    }).start();
   };
 
-  announceTimesUp = ({ finished }) => {
-    if (finished) this.setState({ timesUp: true });
-  };
+  getCurrentColorOfBackground = () => ({
+    backgroundColor: this.backgroundColor.interpolate({
+      inputRange: [0, 100],
+      outputRange: ["#00aaFF", "#808080"]
+    })
+  });
 
   getCurrentWidthOfTimerBar = () => ({
     width: this.widthOfTimerBar.interpolate({
@@ -48,16 +58,16 @@ export default class QuestionRotator extends React.Component {
   render() {
     return (
       <View style={styles.main}>
-        <ScrollView
+        <Animated.ScrollView
           contentContainerStyle={[
             styles.container,
-            this.state.timesUp && styles.timesUp
+            this.getCurrentColorOfBackground()
           ]}
         >
           <Text onPress={this.onPress} style={styles.question}>
             {this.state.question}
           </Text>
-        </ScrollView>
+        </Animated.ScrollView>
         <Animated.View
           style={[styles.timer, this.getCurrentWidthOfTimerBar()]}
         />
@@ -83,7 +93,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flexGrow: 1,
-    backgroundColor: "#00aaFF",
     alignItems: "center",
     justifyContent: "center"
   },
@@ -91,8 +100,5 @@ const styles = StyleSheet.create({
     height: 8,
     backgroundColor: "white",
     alignSelf: "flex-start"
-  },
-  timesUp: {
-    backgroundColor: "red"
   }
 });

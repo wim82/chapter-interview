@@ -17,8 +17,7 @@ class App extends React.Component {
       <Button
         navigation={navigation}
         onPress={() => navigation.navigate("Profile")}
-        title="Who"
-        color="red"
+        title="Details"
       />
     )
   });
