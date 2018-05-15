@@ -1,13 +1,14 @@
 import React from "react";
 import sample from "lodash/sample";
 import { ScrollView, StyleSheet, Text, View, Animated } from "react-native";
-import questions from "./Questions";
+import getQuestions from "./Questions";
 import TimerMixin from "react-timer-mixin";
 import reactMixin from "react-mixin";
 
 export default class QuestionRotator extends React.Component {
   constructor(props) {
     super(props);
+
     this.state = {
       question: "Welcome",
       timesUp: false
@@ -17,25 +18,30 @@ export default class QuestionRotator extends React.Component {
     this.backgroundColor = new Animated.Value(0);
   }
 
-  getRandomQuestion = () => sample(questions);
+  async componentWillMount() {
+    const questions = await getQuestions();
+    this.setState({ questions });
+  }
+
+  getRandomQuestion = () => sample(this.state.questions);
 
   animateTimerBar = () => {
     this.backgroundColor = new Animated.Value(0);
     Animated.timing(this.backgroundColor, {
-      toValue: 1,
-      duration: 100 * 60 * 1
+      toValue: 100,
+      duration: 1000 * 60 * 1
     }).start();
 
     this.widthOfTimerBar = new Animated.Value(0);
     Animated.timing(this.widthOfTimerBar, {
-      toValue: 100,
-      duration: 100 * 60 * 1
+      toValue: 1,
+      duration: 1000 * 60 * 1
     }).start();
   };
 
   getCurrentColorOfBackground = () => ({
     backgroundColor: this.backgroundColor.interpolate({
-      inputRange: [0, 100],
+      inputRange: [0, 1],
       outputRange: ["#00aaFF", "#808080"]
     })
   });
