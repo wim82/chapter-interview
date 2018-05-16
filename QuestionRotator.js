@@ -8,14 +8,10 @@ import reactMixin from "react-mixin";
 export default class QuestionRotator extends React.Component {
   constructor(props) {
     super(props);
-
     this.state = {
-      question: "Welcome",
-      timesUp: false
+      question: "Welcome", //intro message
+      animation: new Animated.Value(0)
     };
-    //width of bar indicates timer, starts with 0 width til 100%
-    this.widthOfTimerBar = new Animated.Value(0);
-    this.backgroundColor = new Animated.Value(0);
   }
 
   async componentWillMount() {
@@ -26,28 +22,23 @@ export default class QuestionRotator extends React.Component {
   getRandomQuestion = () => sample(this.state.questions);
 
   animateTimerBar = () => {
-    this.backgroundColor = new Animated.Value(0);
-    Animated.timing(this.backgroundColor, {
-      toValue: 100,
-      duration: 1000 * 60 * 1
-    }).start();
-
-    this.widthOfTimerBar = new Animated.Value(0);
-    Animated.timing(this.widthOfTimerBar, {
-      toValue: 1,
-      duration: 1000 * 60 * 1
-    }).start();
+    this.setState({ animation: new Animated.Value(0) }, () => {
+      Animated.timing(this.state.animation, {
+        toValue: 1,
+        duration: 10 * 1000
+      }).start();
+    });
   };
 
-  getCurrentColorOfBackground = () => ({
-    backgroundColor: this.backgroundColor.interpolate({
+  getAnimatedBackgroundColor = () => ({
+    backgroundColor: this.state.animation.interpolate({
       inputRange: [0, 1],
-      outputRange: ["#00aaFF", "#808080"]
+      outputRange: ["#00aaFF", "#adccdb"]
     })
   });
 
-  getCurrentWidthOfTimerBar = () => ({
-    width: this.widthOfTimerBar.interpolate({
+  getAnimatedWidth = () => ({
+    width: this.state.animation.interpolate({
       inputRange: [0, 1],
       outputRange: ["0%", "100%"]
     })
@@ -55,7 +46,6 @@ export default class QuestionRotator extends React.Component {
 
   onPress = () => {
     this.setState({
-      timesUp: false,
       question: this.getRandomQuestion()
     });
     this.animateTimerBar();
@@ -65,18 +55,17 @@ export default class QuestionRotator extends React.Component {
     return (
       <View style={styles.main}>
         <Animated.ScrollView
-          contentContainerStyle={[
-            styles.container,
-            this.getCurrentColorOfBackground()
-          ]}
+          style={this.getAnimatedBackgroundColor()}
+          contentContainerStyle={[styles.container]}
         >
-          <Text onPress={this.onPress} style={styles.question}>
+          <Text
+            onPress={this.state.questions && this.onPress}
+            style={styles.question}
+          >
             {this.state.question}
           </Text>
         </Animated.ScrollView>
-        <Animated.View
-          style={[styles.timer, this.getCurrentWidthOfTimerBar()]}
-        />
+        <Animated.View style={[styles.timer, this.getAnimatedWidth()]} />
       </View>
     );
   }
@@ -94,7 +83,7 @@ const styles = StyleSheet.create({
   question: {
     fontSize: 48,
     padding: "5% 5% 5% 5%",
-    color: "white",
+    color: "#FFFFFFEE",
     fontWeight: "bold"
   },
   container: {
